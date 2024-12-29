@@ -8,6 +8,7 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+//index
 Route::get('/jobs', function (){
     $job = Job::with('employee')->latest()->simplePaginate(3);
 
@@ -16,23 +17,19 @@ Route::get('/jobs', function (){
     ]);
 });
 
+//create
 Route::get('jobs/create', function (){
     return view('jobs.create');
 });
 
+//show
 Route::get('/jobs/{id}', function ($id){
-//    \Illuminate\Support\Arr::first($items, function ($item) use ($id) {
-//        return $item['id'] == $id;
-//    });
-
-//    $item = \Illuminate\Support\Arr::first(Job::all(), fn($item) => $item['id'] == $id);
-
-//    We can use the find method from the Job model to get the item data by id.
     $job = Job::find($id);
 
     return view('jobs.show', ['job' => $job]);
 });
 
+//store
 Route::post('/jobs', function (){
     request()->validate([
         'title' => ['required'],
@@ -44,6 +41,39 @@ Route::post('/jobs', function (){
         'price' => request('salary'),
         'employee_id' => 1
     ]);
+
+    return redirect('/jobs');
+});
+
+//edit
+Route::get('/jobs/{id}/edit', function ($id){
+    $job = Job::find($id);
+
+    return view('jobs.edit', ['job' => $job]);
+});
+
+//update
+Route::patch('/jobs/{id}', function ($id){
+    request()->validate([
+        'title' => ['required'],
+        'salary' => ['required']
+    ]);
+
+    $job = Job::find($id);
+
+    $job->update([
+        'name' => request('title'),
+        'price' => request('salary')
+    ]);
+
+    return redirect('/jobs/' . $job->id);
+});
+
+//delete
+Route::delete('/jobs/{id}', function ($id){
+    $job = Job::find($id);
+
+    $job->delete();
 
     return redirect('/jobs');
 });
