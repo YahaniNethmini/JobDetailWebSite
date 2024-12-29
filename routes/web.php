@@ -9,11 +9,15 @@ Route::get('/', function () {
 });
 
 Route::get('/jobs', function (){
-    $job = Job::with('employee')->cursorPaginate(3);
+    $job = Job::with('employee')->latest()->simplePaginate(3);
 
-    return view('jobs',[
+    return view('jobs.index',[
         'jobs' => $job
     ]);
+});
+
+Route::get('jobs/create', function (){
+    return view('jobs.create');
 });
 
 Route::get('/jobs/{id}', function ($id){
@@ -26,7 +30,17 @@ Route::get('/jobs/{id}', function ($id){
 //    We can use the find method from the Job model to get the item data by id.
     $job = Job::find($id);
 
-    return view('job', ['job' => $job]);
+    return view('jobs.show', ['job' => $job]);
+});
+
+Route::post('/jobs', function (){
+    Job::create([
+        'name' => request('title'),
+        'price' => request('salary'),
+        'employee_id' => 1
+    ]);
+
+    return redirect('/jobs');
 });
 
 Route::get('/contact', function () {
