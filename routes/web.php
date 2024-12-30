@@ -1,83 +1,19 @@
 <?php
 
-use App\Models\Job;
+use App\Http\Controllers\JobController;
+use App\Http\Controllers\RegisterController;
+use App\Http\Controllers\SessionController;
 use Illuminate\Support\Facades\Route;
 
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::view('/', 'welcome');
 
-//index
-Route::get('/jobs', function (){
-    $job = Job::with('employee')->latest()->simplePaginate(3);
+Route::resource('jobs', JobController::class);
 
-    return view('jobs.index',[
-        'jobs' => $job
-    ]);
-});
+Route::view('/contact', 'contact');
 
-//create
-Route::get('jobs/create', function (){
-    return view('jobs.create');
-});
+Route::get('register', [RegisterController::class, 'create']);
+Route::post('register', [RegisterController::class, 'store']);
 
-//show
-Route::get('/jobs/{id}', function ($id){
-    $job = Job::find($id);
-
-    return view('jobs.show', ['job' => $job]);
-});
-
-//store
-Route::post('/jobs', function (){
-    request()->validate([
-        'title' => ['required'],
-        'salary' => ['required']
-    ]);
-
-    Job::create([
-        'name' => request('title'),
-        'price' => request('salary'),
-        'employee_id' => 1
-    ]);
-
-    return redirect('/jobs');
-});
-
-//edit
-Route::get('/jobs/{id}/edit', function ($id){
-    $job = Job::find($id);
-
-    return view('jobs.edit', ['job' => $job]);
-});
-
-//update
-Route::patch('/jobs/{id}', function ($id){
-    request()->validate([
-        'title' => ['required'],
-        'salary' => ['required']
-    ]);
-
-    $job = Job::find($id);
-
-    $job->update([
-        'name' => request('title'),
-        'price' => request('salary')
-    ]);
-
-    return redirect('/jobs/' . $job->id);
-});
-
-//delete
-Route::delete('/jobs/{id}', function ($id){
-    $job = Job::find($id);
-
-    $job->delete();
-
-    return redirect('/jobs');
-});
-
-Route::get('/contact', function () {
-    return view('contact');
-});
+Route::get('login', [SessionController::class, 'create']);
+Route::post('login', [SessionController::class, 'store']);
