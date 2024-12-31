@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\JobPosted;
 use App\Models\Job;
 use Illuminate\Auth\Access\Gate;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 
 class JobController extends Controller
 {
@@ -40,11 +42,20 @@ class JobController extends Controller
             'salary' => ['required']
         ]);
 
-        Job::create([
+        $job = Job::create([
             'name' => request('title'),
             'price' => request('salary'),
             'employee_id' => 1
         ]);
+
+        $employee = $job->employee;
+        if ($employee && !empty($employee->email) && filter_var($employee->email, FILTER_VALIDATE_EMAIL)) {
+            Mail::to($employee->email)->send(
+                new JobPosted($job)
+            );
+        } else {
+            return redirect('/jobs')->with('error', 'The employee does not have a valid email address.');
+        }
 
         return redirect('/jobs');
     }

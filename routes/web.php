@@ -6,6 +6,7 @@ use App\Http\Controllers\SessionController;
 use Illuminate\Support\Facades\Route;
 
 Route::view('/', 'welcome');
+Route::view('/contact', 'contact');
 
 //Route::resource('jobs', JobController::class)->only(['index', 'show']);
 //Route::resource('jobs', JobController::class)->except(['index', 'show'])->middleware('auth');
@@ -19,9 +20,6 @@ Route::get('jobs/{job}/edit', [JobController::class, 'edit'])
     ->can('edit,job');
 Route::patch('jobs/{job}', [JobController::class, 'update']);
 Route::delete('jobs/{job}', [JobController::class, 'destroy']);
-
-
-Route::view('/contact', 'contact');
 
 Route::get('register', [RegisterController::class, 'create']);
 Route::post('register', [RegisterController::class, 'store']);
